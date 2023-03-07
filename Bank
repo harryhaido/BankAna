@@ -1,0 +1,202 @@
+# 1 way of uploading the dataset
+
+from google.colab import files
+b_data = files.upload()
+# Import packages
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+
+import matplotlib.pyplot as plt
+import matplotlib.mlab as mlab
+import matplotlib
+plt.style.use('classic')
+%matplotlib inline
+from matplotlib.pyplot import figure
+
+# Read the dataset
+
+df = pd.read_csv('/content/bank.csv')
+# Print the content
+
+data_first_5= df.head(5)
+data_first_5
+
+# Shape and data types of the data
+print(df.shape)
+print(df.dtypes)
+
+# Select numeric columns
+df_numeric = df.select_dtypes(include=[np.number])
+numeric_cols = df_numeric.columns.values
+print(numeric_cols)
+
+# Select non numeric columns
+df_non_numeric = df.select_dtypes(exclude=[np.number])
+non_numeric_cols = df_non_numeric.columns.values
+print(non_numeric_cols)
+ # Creating the heatmap to check for empty value
+plt.figure(figsize = (8,6))
+colours= ['green', 'red' ]
+sns.heatmap(df.isnull(), cbar=False , cmap= sns.color_palette(colours))
+# Shape and data types of the data
+print(df.shape)
+print(df.dtypes)
+# Print the value count of non_numeric column
+
+for i in non_numeric_cols:
+  print('The', i, "value counts is",'\n',df[i].value_counts(), '\n')
+  # Print the data describe
+
+df.describe()
+# The mean
+
+df.mean()
+# The mode
+
+df.mode()
+# Using groupby to get the data to make the graph
+
+df.groupby(['job','y']).size().reset_index()
+# Create a list of data
+
+job_yes=[58,69,15,14,131,53,20,38,19,83,13,7]
+job_no=[420,877,153,98,838,176,163,397,65,682,115,31]
+
+# Calculate the total
+
+total=[]
+for i in range(12):
+  total.append(job_no[i]+job_yes[i])
+
+# Making a bar graph
+
+n=12
+j=np.arange(n)
+job_yes=[58,69,15,14,131,53,20,38,19,83,13,7]
+job_no=[420,877,153,98,838,176,163,397,65,682,115,31]
+fig = plt.figure(figsize=(20,7))
+bar_width = 0.3
+ax = fig.add_subplot(111)
+plt.ylabel('Number of people', fontsize = 15)
+plt.title("How many people saying yes or no in each job?", fontsize = 15)
+bars1 = ['admin','blue-collar','entrepreneur','housemaid','management','retired','self_employed','service','student','technician','unemploy','unknown']
+plt.xticks(j)
+ax.set_xticklabels(bars1)
+n1= plt.bar(j, total, bar_width, color ='orange',label = 'No')
+n2= plt.bar(j, job_yes, bar_width, color ='green',label = 'Yes')
+plt.legend(fontsize = 13)
+plt.show()
+
+
+# # Using groupby to get the data to make the graph
+
+df.groupby(['marital','y']).size().reset_index()
+# Create a list of data
+
+marital = "divorced", "married", "single"
+marital_yes = [77, 277, 167]
+marital_no = [451, 2620,1029]
+
+# Calculate the total
+
+marital_total = []
+for i in range(3):
+  marital_total.append(marital_no[i]+marital_yes[i])
+
+# Making a pie chart
+
+explode = (0, 0,0)
+fig1, ax1 = plt.subplots()
+color=('lightblue','lightgreen','pink')
+ax1.pie(marital_total, explode=explode, labels=marital, autopct='%1.1f%%', shadow=True, startangle=260, colors=color)
+ax1.axis('equal')
+plt.title('What is the marital percentage?')
+plt.show()
+# Using groupby to get the data to make the graph
+
+df.groupby(['education','y']).size().reset_index()
+# Create a list of data
+
+education = ('primary', 'secondary', 'tertiary', 'unknown')
+edu_yes = [64,245,193,19]
+edu_no = [614,2061,1157,168]
+
+# Making a bar graph
+
+n=4
+j=np.arange(n)
+edu_yes = [64,245,193,19]
+edu_no = [614,2061,1157,168]
+fig = plt.figure(figsize=(12,7))
+bar_width = 0.3
+ax = fig.add_subplot(111)
+plt.ylabel('Number of people', fontsize = 15)
+plt.title("How many people saying yes or no in terms of their education?", fontsize = 15)
+education = ('primary', 'secondary', 'tertiary', 'unknown')
+plt.xticks(j + 0.15)
+ax.set_xticklabels(education)
+n1 = plt.bar(j, edu_no, bar_width, color ='lightblue',label = 'No')
+n2 = plt.bar(j+0.3, edu_yes, bar_width, color ='green',label = 'Yes')
+plt.legend(fontsize = 13)
+plt.show()
+# Create a list of data
+
+month= ('jan', 'feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec')
+value_mon=[148,222,49,293,1398, 531, 706, 633,52, 80, 389  , 20]
+
+# Making a histogram
+
+fig = plt.figure(figsize = (6,4))
+ax = fig.add_subplot(111)
+barWidth = 0.8
+y_pos = np.arange(len(month))
+plt.bar(y_pos, value_mon, color=['lightgreen', 'lightgreen', 'lightgreen', 'orange', 'orange','orange','yellow','yellow','yellow','lightblue','lightblue','lightblue'],width = barWidth)
+plt.xticks(y_pos, month)
+plt.ylabel("Number of people")
+ax.set_xticklabels(month)
+ax.set_title('Which month have the most people assign?')
+plt.show()
+# Creating a chart using jointplot
+
+p= sns.jointplot(df['age'], df['balance'], kind='reg')
+p.fig.suptitle("What is the relation ship between age and balance?")
+
+# Drop the y column and create the X_features variable
+
+df_feature = df.drop(['y'],axis=1)
+# Set the data into category type
+
+df['y'] = df.y.astype('category')
+c= df.y.astype('category')
+dict(enumerate(c.cat.categories))
+# Creating y variable and convert the data in non numeric to numeric.
+
+y= df.y.astype('category').cat.codes.values
+print(y)
+# Do the same thing I have done to 'y' column to all other non numeric columns
+
+df_feature['job']= df_feature['job'].astype('category').cat.codes.values
+df_feature['marital'] = df_feature['marital'].astype('category').cat.codes.values
+df_feature['education'] = df_feature['education'].astype('category').cat.codes.values
+df_feature['default'] = df_feature['default'].astype('category').cat.codes.values
+df_feature['housing'] = df_feature['housing'].astype('category').cat.codes.values
+df_feature['loan'] = df_feature['loan'].astype('category').cat.codes.values
+df_feature['contact'] = df_feature['contact'].astype('category').cat.codes.values
+df_feature['month'] = df_feature['month'].astype('category').cat.codes.values
+df_feature['poutcome'] = df_feature['poutcome'].astype('category').cat.codes.values
+#df_feature['education'] = df_feature['education'].astype('category').cat.codes.values
+# Check the columns type again
+
+df_feature.dtypes
+from sklearn.preprocessing import StandardScaler
+X = StandardScaler().fit_transform(df_feature.values)
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.25, random_state=0)
+from sklearn.metrics import classification_report
+from sklearn.tree import DecisionTreeClassifier
+model1 = DecisionTreeClassifier(random_state=1)
+model1.fit(X_train, y_train)
+y_pred1 = model1.predict(X_test)
+print(classification_report(y_test, y_pred1))
